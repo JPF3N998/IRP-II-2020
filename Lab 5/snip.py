@@ -127,7 +127,7 @@ def cropNumbers(img):
     return dataset
 
 def writeDataset(dataset):
-    i = 1
+    i = 0
     for image in dataset:
         cv.imwrite(str(i) + ".jpg", image)
         i += 1
@@ -195,22 +195,21 @@ def getHist4x4(number):
 
     return (resumedH, resumedV)
     
+pivoteColor = 200
 
-
-img = cv.imread("original4.jpg", 0)
+"""
+img = cv.imread("original5.jpg", 0)
 
 ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)#se convierte a una imagen binaria 0 | 255
 
 #plotImage(img)
 
-pivoteColor = 200
+dataset = cropNumbers(img)
+writeDataset(dataset)
+"""
 
-
-#dataset = cropNumbers(img)
-#writeDataset(dataset)
-
-
-number = cv.imread("9.jpg", 0)
+"""
+number = cv.imread("0.jpg", 0)
 hists = getHist4x4(number)
 
 print(hists)
@@ -223,3 +222,39 @@ plt.subplot(132)
 plt.bar([1, 2, 3, 4], np.array(hists[1]))
 plt.title('Original')
 plt.show()
+"""
+
+
+def evalNumber(number):
+
+    hists = [([104, 72, 60, 86], [95, 65, 68, 89]),
+             ([16, 32, 30, 6], [0, 17, 23, 23]),
+             ([14, 52, 51, 120], [42, 81, 86, 24]),
+             ([0, 66, 55, 59], [21, 47, 64, 48]),
+             ([18, 61, 78, 24], [44, 22, 12, 63]),
+             ([4, 74, 55, 50], [28, 48, 45, 49]),
+             ([41, 45, 84, 52], [63, 57, 46, 50]),
+             ([56, 39, 45, 7], [8, 23, 26, 57]),
+             ([71, 81, 71, 85], [50, 99, 92, 67])]
+
+    histNumber = getHist4x4(number)
+    print(histNumber)
+
+    distances = []
+
+    for hist in hists:
+        dist = 0
+        for i in range(len(hist)):
+            dist += abs(hist[0][i] - histNumber[0][i])
+            dist += abs(hist[1][i] - histNumber[1][i])
+
+        distances.append(dist)
+
+    print("El número es", distances.index(min(distances)))
+
+evalNumber(cv.imread("9.jpg", 0))
+
+a = []
+for i in range(0, 9):
+    a.append(getHist4x4(cv.imread(str(i) + ".jpg", 0)))
+print(a)
