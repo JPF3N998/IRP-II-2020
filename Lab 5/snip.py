@@ -134,7 +134,7 @@ def writeDataset(dataset):
 
 def plotImage(img):
     plt.figure(figsize=(5, 5))
-    plt.subplot(1,1,1)
+    plt.subplot(1,2,1)
     plt.imshow(img, cmap = 'gray')
     plt.title('Original')
     plt.show()
@@ -197,32 +197,29 @@ def getHist4x4(number):
     
 
 
-#img = cv.imread("original3.jpg", 0)
+img = cv.imread("original4.jpg", 0)
 
-#ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)#se convierte a una imagen binaria 0 | 255
+ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)#se convierte a una imagen binaria 0 | 255
 
 #plotImage(img)
 
 pivoteColor = 200
 
-"""
-dataset = cropNumbers(img)
-writeDataset(dataset)
-"""
 
-number = cv.imread("1.jpg", 0)
+#dataset = cropNumbers(img)
+#writeDataset(dataset)
+
+
+number = cv.imread("9.jpg", 0)
 hists = getHist4x4(number)
 
 print(hists)
 
-a = np.array(hists[0]) 
-plt.hist(a) 
-plt.title("histogram") 
+plt.figure(figsize=(8, 5))
+plt.subplot(1,1,1)
+plt.subplot(131)
+plt.bar([1, 2, 3, 4], np.array(hists[0]))
+plt.subplot(132)
+plt.bar([1, 2, 3, 4], np.array(hists[1]))
+plt.title('Original')
 plt.show()
-
-a = np.array(hists[1]) 
-plt.hist(a) 
-plt.title("histogram") 
-plt.show()
-
-
