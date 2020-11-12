@@ -13,7 +13,6 @@ def snipHorizontal(img):
             bottomSnipY = bottomSnip(img, y)
             
             if(upperSnipY == -1 or bottomSnipY == -1):
-                print(y)
                 print("Error")
             else:
                 crops.append((upperSnipY, bottomSnipY))
@@ -63,7 +62,6 @@ def snipVertical(img):
             rightSnipX = rightSnip(img, x)
             
             if(leftSnipX == -1 or rightSnipX == -1):
-                print(y)
                 print("Error")
             else:
                 crops.append((leftSnipX, rightSnipX))
@@ -127,14 +125,14 @@ def cropNumbers(img):
     return dataset
 
 def writeDataset(dataset):
-    i = 0
+    i = 1
     for image in dataset:
-        cv.imwrite(str(i) + ".jpg", cv.resize(image, resizeDim, interpolation = cv.INTER_AREA))
+        cv.imwrite(saveFolder + "0" + str(i) + ".jpg", cv.resize(image, resizeDim, interpolation = cv.INTER_AREA))
         i += 1
 
 def plotImage(img):
-    plt.figure(figsize=(5, 5))
-    plt.subplot(1,2,1)
+    plt.figure(figsize=(10, 8))
+    plt.subplot(1,1,1)
     plt.imshow(img, cmap = 'gray')
     plt.title('Original')
     plt.show()
@@ -198,6 +196,7 @@ def getHist4x4(number):
 def readAndCropImage(img):
 
     ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)#se convierte a una imagen binaria 0 | 255
+    plotImage(img)
     dataset = cropNumbers(img)
     writeDataset(dataset)
 
@@ -222,10 +221,18 @@ def evalNumber(number, hists = []):
 pivoteColor = 200
 resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
 
-readAndCropImage(cv.imread("original6.jpg", 0))
+readFolder = "Jose/"
+saveFolder = "Jose/"
 
-for i in range(0, 10):
-    print("Número real:", i, "predicción: ", evalNumber(cv.imread(str(i) + ".jpg", 0)))
+numberToRead = "9"
+
+readFolder = readFolder + numberToRead 
+saveFolder = saveFolder + numberToRead + "/"
+
+readAndCropImage(cv.imread(readFolder + "/" + numberToRead + ".jpg", 0))
+
+#for i in range(0, 10):
+    #print("Número real:", i, "predicción: ", evalNumber(cv.imread(str(i) + ".jpg", 0)))
 
 
 """
