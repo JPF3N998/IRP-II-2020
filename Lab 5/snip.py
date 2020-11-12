@@ -129,7 +129,7 @@ def cropNumbers(img):
 def writeDataset(dataset):
     i = 0
     for image in dataset:
-        cv.imwrite(str(i) + ".jpg", image)
+        cv.imwrite(str(i) + ".jpg", cv.resize(image, resizeDim, interpolation = cv.INTER_AREA))
         i += 1
 
 def plotImage(img):
@@ -194,19 +194,39 @@ def getHist4x4(number):
         resumedV.append(pixelBlock)
 
     return (resumedH, resumedV)
-    
+
+def readAndCropImage(img):
+
+    ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)#se convierte a una imagen binaria 0 | 255
+    dataset = cropNumbers(img)
+    writeDataset(dataset)
+
+def evalNumber(number, hists = []):
+
+    hists = [([551, 379, 368, 454], [527, 323, 315, 513]), ([649, 940, 818, 377], [141, 927, 1017, 625]), ([112, 256, 256, 625], [214, 400, 412, 215]), ([167, 380, 383, 494], [156, 367, 496, 399]), ([248, 639, 479, 176], [423, 151, 212, 743]), ([235, 439, 363, 436], [223, 447, 381, 406]), ([282, 366, 786, 706], [650, 535, 434, 483]), ([574, 347, 502, 188], [124, 353, 608, 503]), ([580, 687, 508, 573], [402, 635, 587, 709]), ([533, 624, 435, 229], [316, 296, 367, 797])]
+
+    histNumber = getHist4x4(number)
+
+    distances = []
+
+    for hist in hists:
+        dist = 0
+        for i in range(len(hist)):
+            dist += abs(hist[0][i] - histNumber[0][i])
+            dist += abs(hist[1][i] - histNumber[1][i])
+
+        distances.append(dist)
+
+    return distances.index(min(distances))
+
 pivoteColor = 200
+resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
 
-"""
-img = cv.imread("original5.jpg", 0)
+readAndCropImage(cv.imread("original6.jpg", 0))
 
-ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)#se convierte a una imagen binaria 0 | 255
+for i in range(0, 10):
+    print("Número real:", i, "predicción: ", evalNumber(cv.imread(str(i) + ".jpg", 0)))
 
-#plotImage(img)
-
-dataset = cropNumbers(img)
-writeDataset(dataset)
-"""
 
 """
 number = cv.imread("0.jpg", 0)
@@ -222,39 +242,35 @@ plt.subplot(132)
 plt.bar([1, 2, 3, 4], np.array(hists[1]))
 plt.title('Original')
 plt.show()
-"""
-
-
-def evalNumber(number):
-
-    hists = [([104, 72, 60, 86], [95, 65, 68, 89]),
-             ([16, 32, 30, 6], [0, 17, 23, 23]),
-             ([14, 52, 51, 120], [42, 81, 86, 24]),
-             ([0, 66, 55, 59], [21, 47, 64, 48]),
-             ([18, 61, 78, 24], [44, 22, 12, 63]),
-             ([4, 74, 55, 50], [28, 48, 45, 49]),
-             ([41, 45, 84, 52], [63, 57, 46, 50]),
-             ([56, 39, 45, 7], [8, 23, 26, 57]),
-             ([71, 81, 71, 85], [50, 99, 92, 67])]
-
-    histNumber = getHist4x4(number)
-    print(histNumber)
-
-    distances = []
-
-    for hist in hists:
-        dist = 0
-        for i in range(len(hist)):
-            dist += abs(hist[0][i] - histNumber[0][i])
-            dist += abs(hist[1][i] - histNumber[1][i])
-
-        distances.append(dist)
-
-    print("El número es", distances.index(min(distances)))
-
-evalNumber(cv.imread("9.jpg", 0))
 
 a = []
-for i in range(0, 9):
+for i in range(0, 10):
     a.append(getHist4x4(cv.imread(str(i) + ".jpg", 0)))
 print(a)
+print()
+
+#histogramas para el dataset original resized to 150x50
+A = [([533, 415, 428, 402], [516, 307, 270, 609]), ([518, 555, 337, 193], [111, 251, 790, 433]), ([93, 176, 224, 568], [201, 389, 351, 112]), ([300, 228, 413, 496], [136, 411, 509, 380]), ([385, 977, 383, 161], [522, 180, 381, 793]), ([572, 398, 212, 470], [246, 496, 435, 462]), ([299, 384, 879, 949], [806, 561, 537, 570]), ([784, 348, 413, 341], [137, 481, 783, 469]), ([512, 724, 440, 610], [369, 524, 516, 839]), ([588, 752, 409, 297], [260, 388, 566, 791])]
+
+#histogramas para el dataset original5 resized to 150x50
+B = [([344, 169, 210, 271], [332, 168, 174, 244]), ([690, 784, 706, 609], [151, 1459, 965, 210]), ([146, 187, 182, 429], [109, 184, 261, 359]), ([201, 226, 177, 403], [119, 227, 347, 258]), ([162, 280, 207, 106], [210, 60, 61, 410]), ([92, 98, 237, 248], [66, 275, 160, 177]), ([69, 180, 462, 520], [369, 340, 214, 286]), ([225, 179, 479, 114], [80, 218, 589, 96]), ([505, 506, 330, 246], [342, 385, 363, 465]), ([326, 420, 161, 111], [143, 105, 124, 589])]
+
+#histogramas para el dataset original6 resized to 150x50
+C = [([776, 553, 466, 688], [732, 493, 500, 687]), ([740, 1480, 1410, 330], [160, 1072, 1296, 1232]), ([96, 405, 362, 879], [331, 627, 623, 175]), ([0, 685, 560, 582], [212, 464, 631, 558]), ([197, 661, 847, 261], [538, 212, 195, 1025]), ([40, 821, 639, 589], [356, 569, 548, 578]), ([479, 533, 1018, 650], [774, 704, 551, 593]), ([714, 513, 613, 108], [154, 359, 452, 945]), ([723, 831, 753, 862], [496, 995, 883, 823]), ([684, 700, 736, 280], [544, 394, 410, 1010])]
+
+#promedio de los 3 histogramas
+[([551, 379, 368, 454], [527, 323, 315, 513]), ([649, 940, 818, 377], [141, 927, 1017, 625]), ([112, 256, 256, 625], [214, 400, 412, 215]), ([167, 380, 383, 494], [156, 367, 496, 399]), ([248, 639, 479, 176], [423, 151, 212, 743]), ([235, 439, 363, 436], [223, 447, 381, 406]), ([282, 366, 786, 706], [650, 535, 434, 483]), ([574, 347, 502, 188], [124, 353, 608, 503]), ([580, 687, 508, 573], [402, 635, 587, 709]), ([533, 624, 435, 229], [316, 296, 367, 797])]
+
+D = []
+#saca el promedio de los arreglos
+for i in range(10):
+    innerH = []
+    innerV = []
+    for j in range(4):
+        innerH.append(round((A[i][0][j] + B[i][0][j] + C[i][0][j]) / 3))
+        innerV.append(round((A[i][1][j] + B[i][1][j] + C[i][1][j]) / 3))
+    D.append((innerH, innerV))
+    
+print(D)
+
+"""
