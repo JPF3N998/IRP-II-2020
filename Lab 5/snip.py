@@ -125,7 +125,7 @@ def cropNumbers(img):
     return dataset
 
 def writeDataset(dataset):
-    i = 1
+    i = 31
     for image in dataset:
         cv.imwrite(saveFolder + "0" + str(i) + ".jpg", cv.resize(image, resizeDim, interpolation = cv.INTER_AREA))
         i += 1
@@ -174,47 +174,53 @@ def getHist4x4(number):
     histH = getHorizontalHist(number)
     histV = getVerticalHist(number)
 
-    resumedH = []
-    resumedV = []
+    resumedHist = []
 
     for multiplo in range(1, 5):
         pixelBlock = 0
         for i in range(height * (multiplo - 1), height * multiplo):
             pixelBlock += histH[i]
             
-        resumedH.append(pixelBlock)
+        resumedHist.append(pixelBlock)
 
     for multiplo in range(1, 5):
         pixelBlock = 0
         for i in range(width * (multiplo - 1), width * multiplo):
             pixelBlock += histV[i]
             
-        resumedV.append(pixelBlock)
+        resumedHist.append(pixelBlock)
 
-    return (resumedH, resumedV)
+    return resumedHist
 
 def readAndCropImage(img):
 
     ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)#se convierte a una imagen binaria 0 | 255
-    plotImage(img)
     dataset = cropNumbers(img)
     writeDataset(dataset)
 
+def getHistsProm(hists):
+
+    prom = [0, 0, 0, 0, 0, 0, 0, 0]
+
+    for hist in hists:
+        prom = np.add(prom, hist)
+
+    np.true_divide(prom, len(hists))
+
+    return prom
+
 def evalNumber(number, hists = []):
 
-    hists = [([551, 379, 368, 454], [527, 323, 315, 513]), ([649, 940, 818, 377], [141, 927, 1017, 625]), ([112, 256, 256, 625], [214, 400, 412, 215]), ([167, 380, 383, 494], [156, 367, 496, 399]), ([248, 639, 479, 176], [423, 151, 212, 743]), ([235, 439, 363, 436], [223, 447, 381, 406]), ([282, 366, 786, 706], [650, 535, 434, 483]), ([574, 347, 502, 188], [124, 353, 608, 503]), ([580, 687, 508, 573], [402, 635, 587, 709]), ([533, 624, 435, 229], [316, 296, 367, 797])]
+    hists = []
 
-    histNumber = getHist4x4(number)
+    histNumber = getHist4x4(number) 
 
     distances = []
 
-    for hist in hists:
-        dist = 0
-        for i in range(len(hist)):
-            dist += abs(hist[0][i] - histNumber[0][i])
-            dist += abs(hist[1][i] - histNumber[1][i])
-
-        distances.append(dist)
+    for hist in hists:        
+        dist = np.subtract(histNumber, hist)
+        dist = np.abs(dist)
+        distances.append(np.sum(dist))
 
     return distances.index(min(distances))
 
@@ -224,7 +230,7 @@ resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
 readFolder = "Jose/"
 saveFolder = "Jose/"
 
-numberToRead = "9"
+numberToRead = "0"
 
 readFolder = readFolder + numberToRead 
 saveFolder = saveFolder + numberToRead + "/"
