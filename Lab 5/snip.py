@@ -125,7 +125,7 @@ def cropNumbers(img):
     return dataset
 
 def writeDataset(dataset):
-    i = 1
+    i = 61
     for image in dataset:
         cv.imwrite(saveFolder + "0" + str(i) + ".jpg", cv.resize(image, resizeDim, interpolation = cv.INTER_AREA))
         i += 1
@@ -196,7 +196,7 @@ def getHist4x4(number):
 def readAndCropImage(img):
 
     ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)#se convierte a una imagen binaria 0 | 255
-    #plotImage(img)
+    plotImage(img)
     dataset = cropNumbers(img)
     writeDataset(dataset)
 
@@ -221,8 +221,8 @@ def evalNumber(number, hists = []):
 pivoteColor = 200
 resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
 
-readFolder = "Paul/"
-saveFolder = "Paul/"
+readFolder = "Nacho/"
+saveFolder = "Nacho/"
 
 numberToRead = "9"
 
