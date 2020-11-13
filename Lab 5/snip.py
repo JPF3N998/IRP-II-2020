@@ -1,4 +1,6 @@
 from matplotlib import pyplot as plt
+import os
+from os import listdir, getcwd
 import numpy as np
 import cv2 as cv
 
@@ -131,7 +133,7 @@ def writeDataset(dataset):
         i += 1
 
 def plotImage(img):
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(5, 5))
     plt.subplot(1,1,1)
     plt.imshow(img, cmap = 'gray')
     plt.title('Original')
@@ -174,24 +176,23 @@ def getHist4x4(number):
     histH = getHorizontalHist(number)
     histV = getVerticalHist(number)
 
-    resumedH = []
-    resumedV = []
+    resumedHist = []
 
     for multiplo in range(1, 5):
         pixelBlock = 0
         for i in range(height * (multiplo - 1), height * multiplo):
             pixelBlock += histH[i]
             
-        resumedH.append(pixelBlock)
+        resumedHist.append(pixelBlock)
 
     for multiplo in range(1, 5):
         pixelBlock = 0
         for i in range(width * (multiplo - 1), width * multiplo):
             pixelBlock += histV[i]
             
-        resumedV.append(pixelBlock)
+        resumedHist.append(pixelBlock)
 
-    return (resumedH, resumedV)
+    return resumedHist
 
 def readAndCropImage(img):
 
@@ -200,23 +201,44 @@ def readAndCropImage(img):
     dataset = cropNumbers(img)
     writeDataset(dataset)
 
-def evalNumber(number, hists = []):
+def getHistsProm(hists):
 
-    hists = [([551, 379, 368, 454], [527, 323, 315, 513]), ([649, 940, 818, 377], [141, 927, 1017, 625]), ([112, 256, 256, 625], [214, 400, 412, 215]), ([167, 380, 383, 494], [156, 367, 496, 399]), ([248, 639, 479, 176], [423, 151, 212, 743]), ([235, 439, 363, 436], [223, 447, 381, 406]), ([282, 366, 786, 706], [650, 535, 434, 483]), ([574, 347, 502, 188], [124, 353, 608, 503]), ([580, 687, 508, 573], [402, 635, 587, 709]), ([533, 624, 435, 229], [316, 296, 367, 797])]
+    prom = [0, 0, 0, 0, 0, 0, 0, 0]
+
+    for hist in hists:
+        prom = np.add(prom, hist)
+
+    prom = np.true_divide(prom, len(hists))
+
+    return prom.tolist()
+
+def evalNumber(number, hists):
 
     histNumber = getHist4x4(number)
+    print(histNumber)
 
     distances = []
 
-    for hist in hists:
-        dist = 0
-        for i in range(len(hist)):
-            dist += abs(hist[0][i] - histNumber[0][i])
-            dist += abs(hist[1][i] - histNumber[1][i])
-
-        distances.append(dist)
+    for hist in hists:        
+        dist = np.subtract(histNumber, hist)
+        dist = np.abs(dist)
+        distances.append(np.sum(dist))
 
     return distances.index(min(distances))
+
+def readNumbers(readFolder):
+    cwd = os.getcwd()
+    pathTrain = cwd + "/" + readFolder
+    trainFiles = os.listdir(path=pathTrain)
+
+    hists = []
+    for imageName in trainFiles:
+        number = cv.imread(readFolder + imageName, 0)
+        hists.append(getHist4x4(number))
+
+    return hists
+
+
 
 pivoteColor = 200
 resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
@@ -229,10 +251,7 @@ numberToRead = "9"
 readFolder = readFolder + numberToRead 
 saveFolder = saveFolder + numberToRead + "/"
 
-readAndCropImage(cv.imread(readFolder + "/" + numberToRead + ".jpg", 0))
-
-#for i in range(0, 10):
-    #print("Número real:", i, "predicción: ", evalNumber(cv.imread(str(i) + ".jpg", 0)))
+readAndCropImage(cv.imread(readFolder + "/" + numberToRead + ".png", 0))
 
 
 """
