@@ -241,9 +241,13 @@ def readNumbers(readFolder):
 pivoteColor = 200
 resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
 
-histprom0 = getHistsProm(readNumbers("0/"))
+promHists = []
 
-print(histprom0)
+for i in range(0, 10):
+    promHists.append(getHistsProm(readNumbers(str(i) + "/")))
+
+print(promHists)
+
 
 """
 readFolder = "Jose/"
