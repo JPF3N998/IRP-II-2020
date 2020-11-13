@@ -1,4 +1,6 @@
 from matplotlib import pyplot as plt
+import os
+from os import listdir, getcwd
 import numpy as np
 import cv2 as cv
 
@@ -125,7 +127,7 @@ def cropNumbers(img):
     return dataset
 
 def writeDataset(dataset):
-    i = 31
+    i = 1
     for image in dataset:
         cv.imwrite(saveFolder + "0" + str(i) + ".jpg", cv.resize(image, resizeDim, interpolation = cv.INTER_AREA))
         i += 1
@@ -195,7 +197,6 @@ def getHist4x4(number):
 def readAndCropImage(img):
 
     ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)#se convierte a una imagen binaria 0 | 255
-    #plotImage(img)
     dataset = cropNumbers(img)
     writeDataset(dataset)
 
@@ -206,13 +207,11 @@ def getHistsProm(hists):
     for hist in hists:
         prom = np.add(prom, hist)
 
-    np.true_divide(prom, len(hists))
+    prom = np.true_divide(prom, len(hists))
 
     return prom
 
-def evalNumber(number, hists = []):
-
-    hists = []
+def evalNumber(number, hists):
 
     histNumber = getHist4x4(number) 
 
@@ -225,11 +224,30 @@ def evalNumber(number, hists = []):
 
     return distances.index(min(distances))
 
+def readNumbers(readFolder):
+    cwd = os.getcwd()
+    pathTrain = cwd + "/" + readFolder
+    trainFiles = os.listdir(path=pathTrain)
+
+    hists = []
+    for imageName in trainFiles:
+        number = cv.imread(readFolder + imageName, 0)
+        hists.append(getHist4x4(number))
+
+    return hists
+
+
+
 pivoteColor = 200
 resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
 
-readFolder = "Paul/"
-saveFolder = "Paul/"
+histprom0 = getHistsProm(readNumbers("0/"))
+
+print(histprom0)
+
+"""
+readFolder = "Jose/"
+saveFolder = "Jose/"
 
 numberToRead = "9"
 
@@ -237,10 +255,7 @@ readFolder = readFolder + numberToRead
 saveFolder = saveFolder + numberToRead + "/"
 
 readAndCropImage(cv.imread(readFolder + "/" + numberToRead + ".jpg", 0))
-
-#for i in range(0, 10):
-    #print("Número real:", i, "predicción: ", evalNumber(cv.imread(str(i) + ".jpg", 0)))
-
+"""
 
 """
 number = cv.imread("0.jpg", 0)
