@@ -195,6 +195,7 @@ def getHist4x4(number):
 def readAndCropImage(img):
 
     ret, img = cv.threshold(img, 127, 255, cv.THRESH_BINARY)#se convierte a una imagen binaria 0 | 255
+    #plotImage(img)
     dataset = cropNumbers(img)
     writeDataset(dataset)
 
@@ -227,8 +228,8 @@ def evalNumber(number, hists = []):
 pivoteColor = 200
 resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
 
-readFolder = "Jose/"
-saveFolder = "Jose/"
+readFolder = "Paul/"
+saveFolder = "Paul/"
 
 numberToRead = "0"
 
