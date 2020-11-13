@@ -231,7 +231,7 @@ resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
 readFolder = "Paul/"
 saveFolder = "Paul/"
 
-numberToRead = "0"
+numberToRead = "9"
 
 readFolder = readFolder + numberToRead 
 saveFolder = saveFolder + numberToRead + "/"
