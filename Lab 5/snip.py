@@ -130,7 +130,7 @@ def cropNumbers(img):
     return dataset
 
 def writeDataset(dataset, saveFolder):
-    i = 60
+    i = 90
     for image in dataset:
         cv.imwrite(saveFolder + "0" + str(i) + ".jpg", cv.resize(image, resizeDim, interpolation = cv.INTER_AREA))
         i += 1
@@ -248,14 +248,14 @@ def readNumbers(readFolder):
 def generate_sub_dataset(readFolder, saveFolder, numberToRead):
     readFolder = readFolder + numberToRead 
     saveFolder = saveFolder + numberToRead + "/"
-    readAndCropImage(cv.imread(readFolder + "/" + numberToRead + ".jpg", 0), saveFolder)
+    readAndCropImage(cv.imread(readFolder + "/" + numberToRead + ".png", 0), saveFolder)
 
 pivoteColor = 200
 resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
 pixelWindowForHist = 4
 
 for i in range(0, 10):
-    generate_sub_dataset("Nacho/", "Nacho/", str(i))
+    generate_sub_dataset("Feng/", "Feng/", str(i))
 
 #promHists = []
 #for i in range(0, 10):
