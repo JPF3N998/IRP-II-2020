@@ -308,35 +308,49 @@ def plotResult(inputImg, predictedNumber, numHist, promHists):
     mng.window.state("zoomed")
     plt.show()
 
+def train_model():
+
+    #saca los promedios de los números
+    promHists = []
+    varHists = []
+    xTest = []
+    yTest = []
+
+    for i in range(0, 10):
+        X_train, X_test, y_train, y_test = readNumbers(i, str(i) + "/", pixelWindowForHist)
+        xTest = xTest + X_test
+        yTest = yTest + y_test
+
+        promI, varI = getHistsPromAndVariance(X_train)
+        promHists.append(promI)
+        varHists.append(varI)
+
+    return promHists, varHists, xTest, yTest
+#=============================================================================================================================
+#Variables de control
 pivoteColor = 200
 resizeDim = (50, 150)#imagenes de 100 x 100 para los números individuales
-
 
 pixelWindowForHist = 10
 resizeDim = (int(resizeDim[0] / pixelWindowForHist) * pixelWindowForHist,
             int(resizeDim[1] / pixelWindowForHist) * pixelWindowForHist)
+#=============================================================================================================================
 
+#Entrenamiento
+prom, var, xTest, yTest = train_model()
+#=============================================================================================================================
 
-#saca los promedios de los números
-promHists = []
-varHists = []
-xTest = []
-yTest = []
+#Accuracy
+print("Accuracy:", getAccuracy(xTest, yTest, prom, var), "con una ventana de pixeles de:", pixelWindowForHist)
+#=============================================================================================================================
 
-for i in range(0, 10):
-    X_train, X_test, y_train, y_test = readNumbers(i, str(i) + "/", pixelWindowForHist)
-    xTest = xTest + X_test
-    yTest = yTest + y_test
-
-    promI, varI = getHistsPromAndVariance(X_train)
-    promHists.append(promI)
-    varHists.append(varI)
-
-prom = promHists
-variance = varHists
-dvs = varHists
-
-print("Accuracy:", getAccuracy(xTest, yTest, prom, dvs), "con una ventana de pixeles de:", pixelWindowForHist)
+#Predicciones
+for i in range(10):
+    num = cv.imread(str(i) + ".jpg", 0)
+    predictedNumber, hist = evalNumber(num, prom, var)
+    print("El numero es:", predictedNumber)
+    plotResult(num, predictedNumber, hist, prom)
+#=============================================================================================================================
 
 
 
@@ -347,27 +361,4 @@ prom = [[151.0357, 228.8929, 212.5119, 167.7976, 136.631, 121.8452, 113.6786, 10
 
 variance = [[25.227, 45.8605, 59.3475, 45.5017, 31.8878, 25.5723, 22.5842, 21.9229, 20.9167, 23.4297, 29.4005, 43.483, 65.2358, 53.1111, 31.1916, 90.0193, 129.3452, 98.47, 81.2976, 77.6046], [50.4167, 60.6182, 65.6786, 65.2755, 68.6584, 69.0017, 64.3889, 62.477, 63.3821, 62.5876, 60.3333, 57.2846, 54.049, 49.8467, 46.0952, 206.9388, 285.5317, 205.8265, 172.1871, 224.0964], [24.5714, 64.1709, 62.5944, 46.5782, 26.1241, 15.6905, 13.9014, 15.7857, 22.9436, 58.1054, 63.5601, 59.6701, 
 83.4252, 99.1576, 44.4351, 105.8954, 149.7857, 171.6171, 171.1122, 42.0142], [28.1429, 108.254, 76.7747, 28.809, 22.1655, 27.1644, 46.0578, 86.6678, 63.801, 23.2914, 20.4668, 38.4354, 61.9082, 75.5408, 37.3194, 67.4651, 137.1338, 145.4694, 198.1502, 119.0317], [25.6752, 46.1429, 54.881, 59.3107, 57.642, 69.1392, 119.4592, 128.3571, 84.2075, 41.6097, 25.9311, 23.9762, 23.7262, 23.7398, 18.0743, 136.0408, 118.1131, 69.7795, 284.1553, 198.3764], [68.1497, 120.6757, 89.4422, 28.3248, 23.557, 44.9286, 81.1837, 105.822, 82.5816, 30.2806, 23.4697, 41.7755, 76.2109, 97.4583, 33.6939, 221.1638, 192.7112, 186.5079, 176.9048, 114.5884], [35.5187, 58.2109, 30.3087, 19.5315, 14.466, 13.3963, 24.3265, 75.7336, 73.5833, 61.5394, 49.7188, 39.7103, 50.3475, 58.6817, 30.2024, 105.9666, 154.3628, 182.0592, 127.3214, 60.2622], [80.5, 115.5451, 80.9484, 22.07, 20.1905, 26.3878, 49.6497, 73.9342, 85.049, 74.627, 27.61, 18.7619, 18.4016, 17.3022, 13.6667, 52.9127, 145.1074, 148.6071, 172.3705, 346.1667], [25.0238, 41.5476, 36.5578, 29.4303, 30.2132, 45.2942, 50.7732, 59.8271, 52.2506, 29.7098, 22.6105, 23.1463, 40.2594, 63.8231, 26.7262, 145.1267, 137.0289, 95.4337, 94.9286, 117.1905], [23.4751, 70.2846, 46.9615, 32.2789, 42.8387, 62.2183, 66.2528, 87.9272, 80.79, 40.6607, 24.6088, 22.6429, 24.322, 27.0731, 15.2381, 74.9762, 144.8946, 143.4575, 179.6953, 165.3294]]
-"""
-for i in range(10):
-    num = cv.imread(str(i) + ".jpg", 0)
-    predictedNumber, hist = evalNumber(num, prom, variance)
-    print("El numero es:", predictedNumber)
-    plotResult(num, predictedNumber, hist, prom)
-
-
-"""
-{
-    number = cv.imread("0.jpg", 0)
-    hists = getHist4x4(number)
-
-    print(hists)
-
-    
-
-    a = []
-    for i in range(0, 10):
-        a.append(getHist4x4(cv.imread(str(i) + ".jpg", 0)))
-    print(a)
-    print()
-}
 """
