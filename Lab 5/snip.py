@@ -5,6 +5,7 @@ import numpy as np
 import cv2 as cv
 import numpy as np
 from sklearn.model_selection import train_test_split
+import json
 
 def snipHorizontal(img):
     crops = []
@@ -337,12 +338,27 @@ resizeDim = (int(resizeDim[0] / pixelWindowForHist) * pixelWindowForHist,
 #=============================================================================================================================
 
 #Entrenamiento
-prom, var, xTest, yTest = train_model()
+lever = False
+if(lever):
+    prom, var, xTest, yTest = train_model()
+    jsonData = json.dumps({'prom': prom, 'var': var})
+    with open('trained.json', 'w', encoding='utf-8') as f:
+        json.dump(jsonData, f, ensure_ascii=False, indent=4)
+
+    
 #=============================================================================================================================
 
 #Accuracy
-print("Accuracy:", getAccuracy(xTest, yTest, prom, var), "con una ventana de pixeles de:", pixelWindowForHist)
+    print("Accuracy:", getAccuracy(xTest, yTest, prom, var), "con una ventana de pixeles de:", pixelWindowForHist)
 #=============================================================================================================================
+else:
+    f = open('trained.json')
+
+    data =  json.load(f)
+    jsonData = json.loads(data)
+    print(len(jsonData['prom']))
+    prom = jsonData['prom']
+    var = jsonData['var']
 
 #Predicciones
 for i in range(10):
