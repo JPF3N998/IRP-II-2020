@@ -326,11 +326,11 @@ def train_model():
     return promHists, varHists, xTest, yTest
 #=============================================================================================================================
 #Variables de control
-Trainlever = True
+Trainlever = not False
 pivoteColor = 200
 resizeDim = (50, 150)#imagenes de 50 x 150 para los números individuales
 
-pixelWindowForHist = 10
+pixelWindowForHist = 4
 resizeDim = (int(resizeDim[0] / pixelWindowForHist) * pixelWindowForHist,
             int(resizeDim[1] / pixelWindowForHist) * pixelWindowForHist)
 #=============================================================================================================================
